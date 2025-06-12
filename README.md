@@ -1,5 +1,3 @@
-**Platform Improvement**
+Continuation of Game 3B, for the final game project (4B).
 
-Starter code for creating a platformer game using Arcade Phsyics in Phaser.
-
-Visual assets courtesy of [Kenny Assets](https://kenney.nl/assets), with gratitude.
+Visual assets courtesy of [Kenny Assets](https://kenney.nl/assets).
