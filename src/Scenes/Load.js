@@ -70,7 +70,7 @@ class Load extends Phaser.Scene {
             repeat: -1
         });
 
-        this.scene.start("platformerScene", {level: 0, score: 0});
+        this.scene.start("startScreen", {level: 0, score: 0});
     }
 
     update() {
