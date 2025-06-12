@@ -7,8 +7,9 @@ class Load extends Phaser.Scene {
         this.load.setPath("./assets/");
 
         this.load.image("tilemap_tiles", "tilemap_packed.png");
-        this.load.tilemapTiledJSON("worldmap", "platformer-tilemap.tmj");
+        this.load.tilemapTiledJSON("l0map", "platformer-tilemap.tmj");
         this.load.tilemapTiledJSON("l1map", "level1-tilemap.tmj");
+        this.load.tilemapTiledJSON("l2map", "level2-tilemap.tmj");
 
         this.load.image("player", "tile_0105.png");
         this.load.image("playerwalk", "tile_0106.png");
@@ -26,7 +27,9 @@ class Load extends Phaser.Scene {
         });
 
         this.load.audio("playerJump", "jump.wav");
+        this.load.audio("playerLand", "land.wav");
         this.load.audio("getCoin", "coin.wav");
+        this.load.audio("newLevel", "newlvl.wav");
 
         this.load.multiatlas("kenny-particles", "kenny-particles.json");
     }
@@ -67,7 +70,7 @@ class Load extends Phaser.Scene {
             repeat: -1
         });
 
-         this.scene.start("platformerScene");
+        this.scene.start("platformerScene", {level: 0, score: 0});
     }
 
     update() {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="100" height="32" tilewidth="8" tileheight="8" infinite="0" nextlayerid="6" nextobjectid="44">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="100" height="32" tilewidth="8" tileheight="8" infinite="0" nextlayerid="6" nextobjectid="67">
  <editorsettings>
-  <export target="platformer-tilemap1.tmj" format="json"/>
+  <export target="level1-tilemap.tmj" format="json"/>
  </editorsettings>
  <tileset firstgid="1" name="tilemap_packed" tilewidth="8" tileheight="8" tilecount="150" columns="15">
   <image source="tilemap_packed.png" width="120" height="80"/>
@@ -383,5 +383,24 @@
   <object id="40" name="door_tr" gid="105" x="776" y="48" width="8" height="8"/>
   <object id="42" name="door_bl" gid="119" x="768" y="56" width="8" height="8"/>
   <object id="43" name="door_br" gid="120" x="776" y="56" width="8" height="8"/>
+  <object id="44" name="coin" gid="96" x="76.3333" y="188.333" width="8" height="8"/>
+  <object id="45" name="coin" gid="96" x="124.667" y="188.667" width="8" height="8"/>
+  <object id="46" name="coin" gid="96" x="180.667" y="166.333" width="8" height="8"/>
+  <object id="47" name="coin" gid="96" x="232.333" y="111" width="8" height="8"/>
+  <object id="48" name="coin" gid="96" x="239.667" y="111" width="8" height="8"/>
+  <object id="49" name="coin" gid="96" x="330.667" y="77.3333" width="8" height="8"/>
+  <object id="50" name="coin" gid="96" x="303" y="117" width="8" height="8"/>
+  <object id="51" name="coin" gid="96" x="387.667" y="94.3333" width="8" height="8"/>
+  <object id="52" name="coin" gid="96" x="309" y="214" width="8" height="8"/>
+  <object id="53" name="coin" gid="96" x="476.667" y="110.667" width="8" height="8"/>
+  <object id="54" name="coin" gid="96" x="487.667" y="110.333" width="8" height="8"/>
+  <object id="55" name="coin" gid="96" x="498.667" y="110.333" width="8" height="8"/>
+  <object id="56" name="coin" gid="96" x="603.667" y="166" width="8" height="8"/>
+  <object id="57" name="coin" gid="96" x="748.333" y="222" width="8" height="8"/>
+  <object id="58" name="coin" gid="96" x="736" y="175" width="8" height="8"/>
+  <object id="59" name="coin" gid="96" x="670.667" y="182.333" width="8" height="8"/>
+  <object id="60" name="coin" gid="96" x="679.667" y="133.667" width="8" height="8"/>
+  <object id="65" name="coin" gid="96" x="720" y="46.3333" width="8" height="8"/>
+  <object id="66" name="coin" gid="96" x="712" y="110.667" width="8" height="8"/>
  </objectgroup>
 </map>

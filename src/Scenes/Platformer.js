@@ -3,7 +3,20 @@ class Platformer extends Phaser.Scene {
         super("platformerScene");
     }
 
-    init() {
+    init(data) {
+        
+        this.levelnum = data.level
+        if(this.levelnum == 1){
+            this.levelname = "l1map";
+        }else if(this.levelnum == 2){
+            this.levelname = "l2map";
+        }else if(this.levelnum == 3){
+            this.scene.start("endScreen", {level: this.levelnum, score : data.score});
+        }else{
+            this.levelname = "l0map";
+        }
+        this.prevscore = data.score;
+
         this.ACCELERATION = 100;
         this.DRAG = 900;  
         this.physics.world.gravity.y = 600;
@@ -15,13 +28,13 @@ class Platformer extends Phaser.Scene {
 
     create() {
 
-        this.map = this.add.tilemap("worldmap", 8, 8, 100, 32);
+        this.map = this.add.tilemap(this.levelname, 8, 8, 100, 32);
         this.gameActive = true;
 
         this.tileset = this.map.addTilesetImage("tilemap_packed", "tilemap");
 
+        this.backgroundLayer = this.map.createLayer("overlay", this.tileset, 0, 0);
         this.groundLayer = this.map.createLayer("tiles", this.tileset, 0, 0);
-        this.overLayer = this.map.createLayer("overlay", this.tileset, 0, 0);
 
         this.groundLayer.setCollisionByProperty({
             collides: true
@@ -30,7 +43,6 @@ class Platformer extends Phaser.Scene {
         this.coins = this.map.createFromObjects("Objects", {
             name: "coin",
             key: "coin1"
-            //frame: 101
         });
 
         // initialize door objects (bottom left, bottom right, top left, top right)
@@ -53,29 +65,31 @@ class Platformer extends Phaser.Scene {
         my.sprite.player.flipX = true
         my.sprite.player.setCollideWorldBounds(true, 0.3, 2.0, true);
 
+        // ghostPlayer follows the player whenever the player is not in the air.
+        // The camera is centered on ghostPlayer, to give the camera the feel of 
+        // adjusting to the player's location whenever they land on a platform.
         my.sprite.ghostPlayer = this.add.sprite(30, 345, "platformer_characters", "tile_0000.png");
         my.sprite.ghostPlayer.visible = false;
 
         this.physics.add.collider(my.sprite.player, this.groundLayer);
 
-        this.points = 0;
+        this.levelscore = 0;
 
-        my.text.score = this.add.text(my.sprite.player.x, my.sprite.player.y, "Score: " + this.points, {
+        my.text.score = this.add.text(my.sprite.player.x, my.sprite.player.y, "Score: " + (this.levelscore + this.prevscore), {
             fontFamily: 'Arial',
             fontSize: 10,
             wordWrap: {
                 width: 390
             }
         });
-        //my.text.score.setScrollFactor(0,0);
 
         my.text.end1 = this.add.text(this.cameras.main.worldView.x + 58, this.cameras.main.worldView.y + 120, "Level Complete!", {
             fontFamily: 'Arial',
             fontSize: 20
         });
-        my.text.end2 = this.add.text(this.cameras.main.worldView.x + 67, this.cameras.main.worldView.y + 150, "Press R to restart", {
+        my.text.end2 = this.add.text(this.cameras.main.worldView.x + 46, this.cameras.main.worldView.y + 150, "Press the space bar to advance", {
             fontFamily: 'Arial',
-            fontSize: 16
+            fontSize: 12
         });
         my.text.end1.visible = false;
         my.text.end2.visible = false;
@@ -85,13 +99,13 @@ class Platformer extends Phaser.Scene {
             this.sound.play("getCoin", {
                 volume: 1   
             });
-            this.points += 1;
+            this.levelscore += 1;
             this.updateScore();
         });
 
         this.physics.add.overlap(my.sprite.player, this.door, (obj1, obj2) => {
             if(this.gameActive){
-                this.sound.play("getCoin", {
+                this.sound.play("newLevel", {
                     volume: 1   
                 });
                 this.gameActive = false;
@@ -106,7 +120,7 @@ class Platformer extends Phaser.Scene {
 
                 my.text.end1.x = this.cameras.main.worldView.x + 58;
                 my.text.end1.y = this.cameras.main.worldView.y + 60;
-                my.text.end2.x = this.cameras.main.worldView.x + 67;
+                my.text.end2.x = this.cameras.main.worldView.x + 46;
                 my.text.end2.y = this.cameras.main.worldView.y + 80;
                 
                 my.vfx.walking.stop();
@@ -118,6 +132,7 @@ class Platformer extends Phaser.Scene {
         cursors = this.input.keyboard.createCursorKeys();
 
         this.rKey = this.input.keyboard.addKey('R');
+        this.sKey = this.input.keyboard.addKey('SPACE');
 
         this.input.keyboard.on('keydown-D', () => {
             this.physics.world.drawDebug = this.physics.world.drawDebug ? false : true
@@ -148,7 +163,7 @@ class Platformer extends Phaser.Scene {
         my.vfx.jump.stop();
 
         this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
-        this.cameras.main.startFollow(my.sprite.ghostPlayer, true, 0.25, 0.25); // (target, [,roundPixels][,lerpX][,lerpY])
+        this.cameras.main.startFollow(my.sprite.ghostPlayer, true, 0.25, 0.25);
         this.cameras.main.setDeadzone(50, 50);
         this.cameras.main.setZoom(this.SCALE);
 
@@ -156,8 +171,17 @@ class Platformer extends Phaser.Scene {
 
     update() {
         if(this.gameActive){
+            // setScrollFactor doesn't seem to work, moving the text manually is the alternative
+            // this is also why it looks so glitchy
             my.text.score.x = this.cameras.main.worldView.x + 4;
             my.text.score.y = this.cameras.main.worldView.y + 4;
+
+            if(my.sprite.player.body.blocked.down && my.sprite.player.anims.currentAnim.key == 'jump'){
+                console.log(my.sprite.player.anims.currentAnim);
+                this.sound.play("playerLand", {
+                    volume: 2   
+                });
+            }
 
             if(cursors.left.isDown) {
                 my.sprite.player.setAccelerationX(-this.ACCELERATION);
@@ -202,21 +226,24 @@ class Platformer extends Phaser.Scene {
                 my.vfx.jump.startFollow(my.sprite.player, my.sprite.player.displayWidth/2-6, my.sprite.player.displayHeight/2-1, false);
                 my.sprite.player.anims.play('jump');
                 my.sprite.ghostPlayer.x = my.sprite.player.x;
-                //this.cameras.main.setFollowOffset(0,  -(this.originalY - this.cameras.main.centerY));
-                //this.cameras.main.centerX = my.sprite.player.x;
+                if(my.sprite.player.y >= 400){
+                    this.scene.start("levelFail", {level: this.levelnum, score : this.prevscore});
+                }
             }else{
-                //this.cameras.main.setFollowOffset(0, 0);
                 my.sprite.ghostPlayer.x = my.sprite.player.x;
                 my.sprite.ghostPlayer.y = my.sprite.player.y;
             }
             if(my.sprite.player.body.blocked.down && Phaser.Input.Keyboard.JustDown(cursors.up)) {
                 my.sprite.player.body.setVelocityY(this.JUMP_VELOCITY);
-                //this.originalY = my.sprite.player.y;
                 this.sound.play("playerJump", {
                     volume: 1   
                 });
                 my.vfx.jump.start();
-                //this.cameras.main.stopFollow();
+            }
+            
+        }else{
+            if(Phaser.Input.Keyboard.JustDown(this.sKey)) {
+                this.scene.start("platformerScene", {level: this.levelnum += 1, score : this.levelscore + this.prevscore});
             }
         }
         if(Phaser.Input.Keyboard.JustDown(this.rKey)) {
@@ -225,6 +252,10 @@ class Platformer extends Phaser.Scene {
     }
 
     updateScore(){
-        my.text.score.setText("Score: " + this.points);
+        my.text.score.setText("Score: " + (this.levelscore + this.prevscore));
+    }
+
+    makeLevel(){
+
     }
 }
